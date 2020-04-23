@@ -1,0 +1,2 @@
+# DiscretionAlgo
+Automated trading
