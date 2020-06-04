@@ -13,7 +13,13 @@
 //+------------------------------------------------------------------+
    
    // Datetime for checking if we have a new candle
-   datetime CandleTime;
+   datetime CurrentCandleTime_m1;
+   datetime CurrentCandleTime_m5;
+   datetime CurrentCandleTime_m15;
+   datetime CurrentCandleTime_m30;
+   datetime CurrentCandleTime_h1;
+   datetime CurrentCandleTime_h4;
+   datetime CurrentCandleTime_d1;
    
    // Boolean variable for sending notifications or not
    input bool NotifyMe = True;
@@ -42,9 +48,14 @@ int OnInit()
       SendNotification("Starting algo");
    }
    
-   
    // Store datetime
-   CandleTime = iTime(Symbol(), PERIOD_M1, 0);   
+   CurrentCandleTime_m1 = iTime(Symbol(), PERIOD_M1, 0);
+   CurrentCandleTime_m5 = iTime(Symbol(), PERIOD_M5, 0); 
+   CurrentCandleTime_m15 = iTime(Symbol(), PERIOD_M15, 0); 
+   CurrentCandleTime_m30 = iTime(Symbol(), PERIOD_M30, 0); 
+   CurrentCandleTime_h1 = iTime(Symbol(), PERIOD_H1, 0); 
+   CurrentCandleTime_h4 = iTime(Symbol(), PERIOD_H4, 0); 
+   CurrentCandleTime_d1 = iTime(Symbol(), PERIOD_D1, 0);    
    
    return(INIT_SUCCEEDED);
   }
@@ -66,11 +77,10 @@ void OnTick()
   {
    
    // If last stored candle time is different from newest candle time, we have new candle
-   if (CandleTime != iTime(Symbol(), PERIOD_M1, 0))
+   if (CurrentCandleTime_m1 != iTime(Symbol(), PERIOD_M1, 0))
    {  
       // Store new candle time
-      datetime PreviousCandleTime = CandleTime;
-      CandleTime = iTime(Symbol(), PERIOD_M1, 0);
+      CurrentCandleTime_m1 = iTime(Symbol(), PERIOD_M1, 0);
       
       if (engulfing_m1){
          if (CheckEngulfing(PERIOD_M1)){
@@ -80,6 +90,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_M1);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_m5 != iTime(Symbol(), PERIOD_M5, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_m5 = iTime(Symbol(), PERIOD_M5, 0);
       if (engulfing_m5){
          if (CheckEngulfing(PERIOD_M5)){
             if (NotifyMe){
@@ -88,6 +105,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_M5);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_m15 != iTime(Symbol(), PERIOD_M15, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_m15 = iTime(Symbol(), PERIOD_M15, 0);
       if (engulfing_m15){
          if (CheckEngulfing(PERIOD_M15)){
             if (NotifyMe){
@@ -96,6 +120,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_M15);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_m30 != iTime(Symbol(), PERIOD_M30, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_m30 = iTime(Symbol(), PERIOD_M30, 0);
       if (engulfing_m30){
          if (CheckEngulfing(PERIOD_M30)){
             if (NotifyMe){
@@ -104,6 +135,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_M30);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_h1 != iTime(Symbol(), PERIOD_H1, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_h1 = iTime(Symbol(), PERIOD_H1, 0);
       if (engulfing_h1){
          if (CheckEngulfing(PERIOD_H1)){
             if (NotifyMe){
@@ -112,6 +150,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_H1);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_h4 != iTime(Symbol(), PERIOD_H4, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_h4 = iTime(Symbol(), PERIOD_H4, 0);
       if (engulfing_h4){
          if (CheckEngulfing(PERIOD_H4)){
             if (NotifyMe){
@@ -120,6 +165,13 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_H4);
          }
       }
+   }
+   
+   // If last stored candle time is different from newest candle time, we have new candle
+   if (CurrentCandleTime_d1 != iTime(Symbol(), PERIOD_D1, 0))
+   {  
+      // Store new candle time
+      CurrentCandleTime_d1 = iTime(Symbol(), PERIOD_D1, 0);
       if (engulfing_d1){
          if (CheckEngulfing(PERIOD_D1)){
             if (NotifyMe){
@@ -128,7 +180,6 @@ void OnTick()
             printf("Engulfing on " + Symbol() + ", timeframe " + PERIOD_D1);
          }
       }
-      
     }
   }
 
@@ -138,10 +189,10 @@ bool CheckEngulfing(ENUM_TIMEFRAMES timeframe){
    double open_last = iOpen(Symbol(), timeframe, 1);
    double close_last = iClose(Symbol(), timeframe, 1);
    
-   double high_previous = iHigh(Symbol(), timeframe, 2);
-   double low_previous = iLow(Symbol(), timeframe, 2);
-   double open_previous = iOpen(Symbol(), timeframe, 2);
-   double close_previous = iClose(Symbol(), timeframe, 2);
+   double high_oldest = iHigh(Symbol(), timeframe, 2);
+   double low_oldest = iLow(Symbol(), timeframe, 2);
+   double open_oldest = iOpen(Symbol(), timeframe, 2);
+   double close_oldest = iClose(Symbol(), timeframe, 2);
    
    return ((high_last > high_previous && close_last < low_previous) || (low_last < low_previous && close_last > high_previous));
    
